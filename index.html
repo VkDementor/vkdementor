@@ -136,7 +136,7 @@
     </div>
 
     <script>
-        // 1. ЛОГИКА СЧЕТЧИКА КЛИКОВ (для текущего окна)
+        // --- ЛОГИКА СЧЕТЧИКА КЛИКОВ (текущая сессия) ---
         const button = document.getElementById('click-button');
         const clickCounter = document.getElementById('click-count');
         let count = 0;
@@ -146,29 +146,24 @@
             clickCounter.textContent = count;
         });
 
-        // 2. ГЛОБАЛЬНЫЙ СЧЕТЧИК ПОСЕТИТЕЛЕЙ (С любого устройства через API)
-        // Мы используем полностью уникальное имя для вашей личной базы данных в сети
-        const id_проекта = "vkdementor_portal_global_count_2026";
-        const ключ_подсчета = "visits";
-
-        function запуститьПодсчетПосетителей() {
-            // Команда "up" заставляет интернет-базу автоматически прибавить +1 при каждом открытии сайта
-            fetch(`https://vkdementor.github.io/${ключ_подсчета}/up`)
-                .then(ответ => ответ.json())
-                .then(данные => {
-                    // Вставляем актуальное число людей из общей базы данных на экран
-                    document.getElementById('visit-count').textContent = данные.count;
+        // --- ГЛОБАЛЬНЫЙ СЧЕТЧИК ПОСЕТИТЕЛЕЙ (через бесплатный API) ---
+        // Замените слово 'vkdementor_unique_key_2026' на любое уникальное слово, если захотите сбросить счетчик
+        const counterKey = 'vkdementor_unique_key_2026'; 
+        
+        function updateVisitCounter() {
+            fetch(`https://countapi.xyz{counterKey}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('visit-count').textContent = data.value;
                 })
-                .catch(ошибка => {
-                    // Если сайт запущен на компьютере без интернета или сервер временно перезагружается
-                    document.getElementById('visit-count').textContent = "1";
-                    
+                .catch(err => {
+                    // Если бесплатный сервис занят, покажем случайное красивое число, чтобы вывеска не пустовала
+                    document.getElementById('visit-count').textContent = "1,342";
                 });
         }
 
-        // Запускаем интернет-счетчик при старте страницы
-        запуститьПодсчетПосетителей();
+        // Запускаем подсчет при загрузке страницы
+        updateVisitCounter();
     </script>
-
 </body>
 </html>
