@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Официальное название вкладки в браузере -->
     <title>VKDEMENTOR | Портал</title>
     <style>
         body {
@@ -18,7 +17,7 @@
             overflow: hidden;
         }
 
-        /* Вывеска посещаемости вверху */
+        /* Вывеска глобальной посещаемости вверху */
         .visit-badge {
             background: rgba(157, 0, 255, 0.1);
             border: 1px dashed rgba(157, 0, 255, 0.5);
@@ -122,12 +121,10 @@
 <body>
 
     <div class="card">
-        <!-- Вывеска посещаемости -->
         <div class="visit-badge">
-            Ритуал прошли: <span id="visit-count">0</span> чел.
+            Ритуал прошли: <span id="visit-count">Загрузка...</span> чел.
         </div>
 
-        <!-- Главное название на странице -->
         <h1>vkdementor</h1>
         <p>Добро пожаловать в цитадель Дементора. Каждое нажатие на кнопку ниже укрепляет темную энергию этого портала.</p>
         
@@ -139,7 +136,7 @@
     </div>
 
     <script>
-        // --- ЛОГИКА СЧЕТЧИКА КЛИКОВ ---
+        // 1. ЛОГИКА СЧЕТЧИКА КЛИКОВ (для текущего окна)
         const button = document.getElementById('click-button');
         const clickCounter = document.getElementById('click-count');
         let count = 0;
@@ -149,22 +146,28 @@
             clickCounter.textContent = count;
         });
 
-        // --- ГЛОБАЛЬНЫЙ СЧЕТЧИК ПОСЕТИТЕЛЕЙ ---
-        const namespace = "vkdementor_portal_final_2026";
-        const key = "visits";
+        // 2. ГЛОБАЛЬНЫЙ СЧЕТЧИК ПОСЕТИТЕЛЕЙ (С любого устройства через API)
+        // Мы используем полностью уникальное имя для вашей личной базы данных в сети
+        const id_проекта = "vkdementor_portal_global_count_2026";
+        const ключ_подсчета = "visits";
 
-        function updateVisitCounter() {
-            fetch(`https://counterapi.dev{namespace}/${key}/up`)
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('visit-count').textContent = data.count;
+        function запуститьПодсчетПосетителей() {
+            // Команда "up" заставляет интернет-базу автоматически прибавить +1 при каждом открытии сайта
+            fetch(`https://counterapi.dev{id_проекта}/${ключ_подсчета}/up`)
+                .then(ответ => ответ.json())
+                .then(данные => {
+                    // Вставляем актуальное число людей из общей базы данных на экран
+                    document.getElementById('visit-count').textContent = данные.count;
                 })
-                .catch(err => {
-                    console.log("Локальный запуск. Счетчик активируется после публикации в интернете.");
+                .catch(ошибка => {
+                    // Если сайт запущен на компьютере без интернета или сервер временно перезагружается
+                    document.getElementById('visit-count').textContent = "1";
+                    console.log("Локальный режим. Счетчик активируется полностью после обновления на GitHub.");
                 });
         }
 
-        updateVisitCounter();
+        // Запускаем интернет-счетчик при старте страницы
+        запуститьПодсчетПосетителей();
     </script>
 
 </body>
